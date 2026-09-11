@@ -208,6 +208,23 @@ body{overflow:auto;touch-action:manipulation}
 .math-message{text-align:center;min-height:20px;color:#9ba5b9;font-size:12px;margin-top:14px}
 @media(max-width:380px){.math-problem{font-size:34px}.math-option{padding:14px;font-size:18px}}
 
+
+.withdraw-panel{margin-top:14px;padding:16px;background:#101624;border:1px solid #293247;border-radius:16px;display:none}
+.withdraw-panel.show{display:block}
+.withdraw-panel label{display:block;color:#aab3c8;font-size:11px;font-weight:800;margin:0 0 7px}
+.withdraw-panel input{width:100%;border:1px solid #30394e;background:#0b101b;color:#fff;border-radius:11px;padding:13px;font-size:14px;outline:none;margin-bottom:12px}
+.withdraw-panel input:focus{border-color:#ffc83d}
+.withdraw-hint{font-size:11px;color:#8992aa;line-height:1.45;margin:-3px 0 12px}
+.withdraw-submit{width:100%;border:0;border-radius:12px;padding:13px;background:#ffc83d;color:#17120a;font-weight:900;cursor:pointer}
+.withdraw-cancel{width:100%;border:1px solid #30394e;border-radius:12px;padding:12px;background:#20283a;color:#fff;font-weight:800;cursor:pointer;margin-top:8px}
+.withdraw-error{min-height:16px;color:#ff8f8f;font-size:11px;margin:-4px 0 8px}
+.withdraw-history{margin-top:16px}
+.withdraw-history h3{font-size:14px;margin:0 0 9px}
+.withdraw-item{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#101624;border:1px solid #293247;border-radius:13px;padding:11px;margin-top:8px}
+.withdraw-item b{font-size:12px}.withdraw-item small{display:block;color:#8992aa;margin-top:3px;font-size:10px}
+.withdraw-status{font-size:10px;font-weight:900;color:#ffc83d;background:#2a2413;padding:6px 8px;border-radius:8px;white-space:nowrap}
+.withdraw-empty{font-size:11px;color:#8992aa}
+
 </style>
 </head>
 <body>
@@ -302,6 +319,22 @@ body{overflow:auto;touch-action:manipulation}
     <div class="rupee" id="walletRupee">₹0.00</div>
     <p class="sub">Conversion: <b>100 coins = ₹1</b></p>
     <button class="withdraw" id="withdraw">WITHDRAW EARNINGS</button>
+
+    <div class="withdraw-panel" id="withdrawPanel">
+      <label for="upiId">UPI ID</label>
+      <input id="upiId" type="text" inputmode="email" autocomplete="off" placeholder="example@upi" maxlength="80">
+      <label for="withdrawAmount">AMOUNT (₹)</label>
+      <input id="withdrawAmount" type="number" inputmode="decimal" min="1" step="1" placeholder="Enter amount">
+      <div class="withdraw-hint">Minimum withdrawal: ₹10 (1,000 coins). Your balance will be checked before submitting.</div>
+      <div class="withdraw-error" id="withdrawError"></div>
+      <button class="withdraw-submit" id="withdrawSubmit">SUBMIT WITHDRAWAL REQUEST</button>
+      <button class="withdraw-cancel" id="withdrawCancel">CANCEL</button>
+    </div>
+
+    <div class="withdraw-history">
+      <h3>Withdrawal History</h3>
+      <div id="withdrawHistory"></div>
+    </div>
   </div>
 </section>
 </main>
@@ -569,8 +602,112 @@ body{overflow:auto;touch-action:manipulation}
   });
 
   document.getElementById("watch").addEventListener("click",()=>toast("AdsGram will be connected after the app is finished."));
-  document.getElementById("withdraw").addEventListener("click",()=>toast("Withdrawal form is the next wallet step."));
 
+  // WALLET / WITHDRAWAL (front-end request tracking for now)
+  const withdrawButton=document.getElementById("withdraw");
+  const withdrawPanel=document.getElementById("withdrawPanel");
+  const withdrawSubmit=document.getElementById("withdrawSubmit");
+  const withdrawCancel=document.getElementById("withdrawCancel");
+  const upiInput=document.getElementById("upiId");
+  const amountInput=document.getElementById("withdrawAmount");
+  const withdrawError=document.getElementById("withdrawError");
+  const withdrawHistory=document.getElementById("withdrawHistory");
+  const MIN_WITHDRAWAL_RUPEES=10;
+  const WITHDRAW_KEY="coinPlayWithdrawals";
+
+  function getWithdrawals(){
+    try{
+      const data=JSON.parse(localStorage.getItem(WITHDRAW_KEY)||"[]");
+      return Array.isArray(data)?data:[];
+    }catch(e){return []}
+  }
+
+  function renderWithdrawals(){
+    const list=getWithdrawals();
+    if(!list.length){
+      withdrawHistory.innerHTML='<div class="withdraw-empty">No withdrawal requests yet.</div>';
+      return;
+    }
+    withdrawHistory.innerHTML="";
+    list.slice().reverse().forEach(item=>{
+      const row=document.createElement("div");
+      row.className="withdraw-item";
+      const left=document.createElement("div");
+      const amount=document.createElement("b");
+      amount.textContent="₹"+Number(item.amount).toFixed(2);
+      const meta=document.createElement("small");
+      meta.textContent=item.upi+" • "+item.date;
+      left.append(amount,meta);
+      const status=document.createElement("span");
+      status.className="withdraw-status";
+      status.textContent=item.status||"PENDING";
+      row.append(left,status);
+      withdrawHistory.appendChild(row);
+    });
+  }
+
+  function openWithdraw(){
+    withdrawError.textContent="";
+    withdrawPanel.classList.add("show");
+    withdrawButton.style.display="none";
+    amountInput.value="";
+    upiInput.focus();
+  }
+
+  function closeWithdraw(){
+    withdrawPanel.classList.remove("show");
+    withdrawButton.style.display="block";
+    withdrawError.textContent="";
+  }
+
+  function submitWithdrawal(){
+    const upi=upiInput.value.trim();
+    const amount=Number(amountInput.value);
+    const currentCoins=Number(localStorage.getItem("coinPlayCoins")||0);
+
+    withdrawError.textContent="";
+
+    if(!upi || !/^[^\\s@]+@[^\\s@]+$/.test(upi)){
+      withdrawError.textContent="Please enter a valid UPI ID.";
+      return;
+    }
+    if(!Number.isFinite(amount) || amount<MIN_WITHDRAWAL_RUPEES){
+      withdrawError.textContent="Minimum withdrawal is ₹10.";
+      return;
+    }
+
+    const coinsNeeded=Math.round(amount*100);
+    if(coinsNeeded>currentCoins){
+      withdrawError.textContent="You don't have enough coins for this withdrawal.";
+      return;
+    }
+
+    const request={
+      id:"CP-"+Date.now().toString(36).toUpperCase(),
+      upi:upi,
+      amount:amount,
+      coins:coinsNeeded,
+      status:"PENDING",
+      date:new Date().toLocaleString("en-IN")
+    };
+
+    const list=getWithdrawals();
+    list.push(request);
+    localStorage.setItem(WITHDRAW_KEY,JSON.stringify(list));
+
+    // Reserve the requested coins so the same balance cannot be requested twice.
+    setCoins(currentCoins-coinsNeeded);
+
+    closeWithdraw();
+    renderWithdrawals();
+    toast("Withdrawal request submitted.");
+  }
+
+  withdrawButton.addEventListener("click",openWithdraw);
+  withdrawCancel.addEventListener("click",closeWithdraw);
+  withdrawSubmit.addEventListener("click",submitWithdrawal);
+
+  renderWithdrawals();
   render();
   window.coinPlayShowPage("home");
 })();
