@@ -16,7 +16,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 .hero{border:1px solid #303750;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,#202943,#151a29);box-shadow:0 12px 35px #0005;margin-bottom:18px}
 .eyebrow{font-size:12px;color:#aab3c8;font-weight:700;text-transform:uppercase;letter-spacing:1px}
 .balance{font-size:39px;font-weight:900;margin:5px 0}.rupee{color:#aeb7ca;font-size:14px;margin-bottom:18px}
-.watch{width:100%;border:0;border-radius:15px;padding:16px;background:#ffc83d;color:#17120a;font-size:16px;font-weight:900;cursor:pointer}.watch:active{transform:scale(.98)}
+.watch{width:100%;border:0;border-radius:15px;padding:16px;background:#ffc83d;color:#17120a;font-size:16px;font-weight:900;cursor:pointer}.watch:active{transform:scale(.98)}.watch:disabled{opacity:.65;cursor:wait;transform:none}
 .note{text-align:center;color:#8992aa;font-size:11px;margin-top:10px}
 .section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 2px 12px}.section-title h2{font-size:18px;margin:0}.section-title span{font-size:11px;color:#8e98ae}
 .games{display:grid;gap:11px}.game{display:flex;align-items:center;gap:13px;padding:15px;background:#121724;border:1px solid #252c3e;border-radius:17px}
@@ -533,6 +533,7 @@ body{overflow:auto;touch-action:manipulation}
     document.querySelector(".puzzle-actions").style.display="none";
     document.getElementById("puzzleResult").style.display="block";
     document.getElementById("puzzleResult").innerHTML='<div class="result-icon">🎉</div><h2>Puzzle Complete!</h2><p>You completed all 3 rounds in '+puzzleMoves+' moves.</p><p><strong style="color:#ffc83d">+10 🪙 coins added</strong></p>';
+    setTimeout(showInterstitialAd, 500);
   }
   function openPuzzle(){
     showPage("puzzle");puzzleRound=1;
@@ -584,6 +585,7 @@ body{overflow:auto;touch-action:manipulation}
     document.getElementById("mathResult").style.display="block";
     document.getElementById("mathResult").innerHTML='<div class="result-icon">🧠</div><h2>Math Complete!</h2><p>You scored <b>'+mathScore+'/'+MATH_TOTAL+'</b>.</p><p><strong style="color:#ffc83d">+10 🪙 coins added</strong></p>';
     addCoins(10);
+    setTimeout(showInterstitialAd, 500);
   }
   function openMath(){
     showPage("math");mathIndex=0;mathScore=0;
@@ -601,7 +603,74 @@ body{overflow:auto;touch-action:manipulation}
     });
   });
 
-  document.getElementById("watch").addEventListener("click",()=>toast("AdsGram will be connected after the app is finished."));
+  // ADSGRAM
+  // Reward block: 47433
+  // Interstitial block: int-47432
+  const ADSGRAM_REWARD_BLOCK = "47433";
+  const ADSGRAM_INTERSTITIAL_BLOCK = "int-47432";
+
+  let rewardAdController = null;
+  let interstitialAdController = null;
+
+  function initAdsgram(){
+    try{
+      if(!window.Adsgram) return false;
+      rewardAdController = window.Adsgram.init({blockId: ADSGRAM_REWARD_BLOCK});
+      interstitialAdController = window.Adsgram.init({blockId: ADSGRAM_INTERSTITIAL_BLOCK});
+      return true;
+    }catch(error){
+      console.error("AdsGram initialization error:", error);
+      return false;
+    }
+  }
+
+  async function showRewardedAd(){
+    const button = document.getElementById("watch");
+    if(button.disabled)return;
+
+    button.disabled = true;
+    const oldText = button.textContent;
+    button.textContent = "⏳ LOADING AD...";
+
+    try{
+      if(!rewardAdController && !initAdsgram()){
+        throw new Error("AdsGram is not available.");
+      }
+
+      button.textContent = "▶️ WATCHING AD...";
+      const result = await rewardAdController.show();
+
+      // Reward only when the rewarded ad has completed.
+      if(result && result.done === false){
+        toast("Ad was not completed. No coins were added.");
+        return;
+      }
+
+      addCoins(10);
+      toast("🎉 +10 coins added!");
+    }catch(error){
+      console.error("AdsGram rewarded ad error:", error);
+      toast("Ad is unavailable right now. Please try again.");
+    }finally{
+      button.disabled = false;
+      button.textContent = oldText;
+    }
+  }
+
+  async function showInterstitialAd(){
+    try{
+      if(!interstitialAdController && !initAdsgram()) return;
+      await interstitialAdController.show();
+    }catch(error){
+      // No reward is connected to the interstitial.
+      console.log("AdsGram interstitial unavailable:", error);
+    }
+  }
+
+  document.getElementById("watch").addEventListener("click", showRewardedAd);
+
+  // Initialize both blocks once the page is ready.
+  initAdsgram();
 
   // WALLET / WITHDRAWAL (front-end request tracking for now)
   const withdrawButton=document.getElementById("withdraw");
@@ -1038,6 +1107,7 @@ function endRace(){
  saved.coins+=raceCoins;saved.races++;if(wasBest)saved.best=finalDistance;addLeaderboardScore();saveGame();updateHome();
  finalText.innerHTML="Score: <b>"+Math.floor(score)+"</b><br>Distance: <b>"+finalDistance+"m</b><br>Coins: <b>+"+raceCoins+" 🪙</b>";
  bestBadge.classList.toggle("hidden",!wasBest);gameOver.classList.remove("hidden");
+ setTimeout(showInterstitialAd, 500);
 }
 againButton.addEventListener("click",()=>{gameOver.classList.add("hidden");startRace()});
 raceHome.addEventListener("click",()=>{running=false;cancelAnimationFrame(animationFrame);gameOver.classList.add("hidden");speedFX.classList.remove("active","fast");updateHome();showScreen(home);if(window.coinPlayShowPage)window.coinPlayShowPage("games")});
