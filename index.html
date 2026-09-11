@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CoinPlay</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#090b12;color:#fff}
+.app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#111528 0,#090b12 55%);padding:18px 16px 88px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.logo{font-size:23px;font-weight:900;letter-spacing:-.5px}.logo span{color:#ffc83d}
+.wallet-mini{background:#171c2b;border:1px solid #2a3145;border-radius:14px;padding:8px 12px;text-align:right}
+.wallet-mini small{display:block;color:#8992aa;font-size:10px}.wallet-mini b{font-size:14px}
+.hero{border:1px solid #303750;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,#202943,#151a29);box-shadow:0 12px 35px #0005;margin-bottom:18px}
+.eyebrow{font-size:12px;color:#aab3c8;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.balance{font-size:39px;font-weight:900;margin:5px 0}.rupee{color:#aeb7ca;font-size:14px;margin-bottom:18px}
+.watch{width:100%;border:0;border-radius:15px;padding:16px;background:#ffc83d;color:#17120a;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 7px 20px #ffc83d35}
+.watch:active{transform:scale(.98)}.note{text-align:center;color:#8992aa;font-size:11px;margin-top:10px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 2px 12px}.section-title h2{font-size:18px;margin:0}.section-title span{font-size:11px;color:#8e98ae}
+.games{display:grid;gap:11px}.game{display:flex;align-items:center;gap:13px;padding:15px;background:#121724;border:1px solid #252c3e;border-radius:17px}
+.icon{width:49px;height:49px;border-radius:14px;display:grid;place-items:center;font-size:25px;background:#20283b}
+.game h3{margin:0 0 3px;font-size:15px}.game p{margin:0;color:#8791a8;font-size:11px}.play{margin-left:auto;background:#1e2638;color:#fff;border:1px solid #30394e;border-radius:10px;padding:9px 12px;font-weight:800;font-size:12px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(3,1fr);background:#0d111cdd;backdrop-filter:blur(14px);border-top:1px solid #252c3d;padding:9px 10px calc(9px + env(safe-area-inset-bottom))}
+.nav{border:0;background:transparent;color:#788299;font-size:11px;font-weight:700;padding:7px;cursor:pointer}.nav.active{color:#ffc83d}.nav div{font-size:19px;margin-bottom:2px}
+.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#20283a;border:1px solid #39445c;padding:10px 15px;border-radius:12px;font-size:12px;display:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="logo">Coin<span>Play</span></div>
+    <div class="wallet-mini"><small>BALANCE</small><b id="mini">0 🪙</b></div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">Your earnings</div>
+    <div class="balance"><span id="coins">0</span> 🪙</div>
+    <div class="rupee" id="rupee">₹0.00</div>
+    <button class="watch" id="watch">🎁 WATCH & EARN 10 COINS</button>
+    <div class="note">Complete the rewarded ad to receive your coins.</div>
+  </section>
+
+  <div class="section-title"><h2>🎮 Play & Earn</h2><span>3 games</span></div>
+  <section class="games">
+    <article class="game"><div class="icon">🧩</div><div><h3>Puzzle</h3><p>Test your speed & logic</p></div><button class="play">PLAY</button></article>
+    <article class="game"><div class="icon">🏎️</div><div><h3>Turbo Racing</h3><p>Dodge traffic and race</p></div><button class="play">PLAY</button></article>
+    <article class="game"><div class="icon">🧠</div><div><h3>Mental Math</h3><p>Solve before the timer</p></div><button class="play">PLAY</button></article>
+  </section>
+
+  <div class="section-title"><h2>💰 Your Wallet</h2><span>100 🪙 = ₹1</span></div>
+  <section class="game" id="wallet"><div class="icon">💳</div><div><h3>Withdraw Earnings</h3><p>Manage your balance & requests</p></div><button class="play">OPEN</button></section>
+</main>
+
+<nav class="bottom">
+  <button class="nav active"><div>🏠</div>Home</button>
+  <button class="nav"><div>🎮</div>Games</button>
+  <button class="nav"><div>💰</div>Wallet</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  let coins = 0;
+  const $ = id => document.getElementById(id);
+  function render(){
+    $("coins").textContent = coins.toLocaleString("en-IN");
+    $("mini").textContent = coins.toLocaleString("en-IN") + " 🪙";
+    $("rupee").textContent = "₹" + (coins/100).toFixed(2);
+  }
+  function toast(text){
+    const t=$("toast"); t.textContent=text; t.style.display="block";
+    clearTimeout(window.__toast); window.__toast=setTimeout(()=>t.style.display="none",2200);
+  }
+  $("watch").addEventListener("click",()=>toast("AdsGram rewarded ad will be connected here."));
+  document.querySelectorAll(".play").forEach((b,i)=>{
+    b.addEventListener("click",()=>{
+      if(i<3) toast("Game screen coming next.");
+      else toast("Wallet screen coming next.");
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>
