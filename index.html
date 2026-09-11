@@ -1,15 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CoinPlay</title>
 <style>
+
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#090b12;color:#fff}
 .app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#111528 0,#090b12 55%);padding:18px 16px 94px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
-.logo{font-size:23px;font-weight:900;letter-spacing:-.5px}.logo span{color:#ffc83d}
+.cp-logo{font-size:23px;font-weight:900;letter-spacing:-.5px}.cp-logo span{color:#ffc83d}
 .wallet-mini{background:#171c2b;border:1px solid #2a3145;border-radius:14px;padding:8px 12px;text-align:right}.wallet-mini small{display:block;color:#8992aa;font-size:10px}.wallet-mini b{font-size:14px}
 .page{display:none}.page.active{display:block}
 .hero{border:1px solid #303750;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,#202943,#151a29);box-shadow:0 12px 35px #0005;margin-bottom:18px}
@@ -45,12 +46,175 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 .puzzle-actions .primary{background:#ffc83d;color:#17120a}
 .result{text-align:center;padding:24px 10px}.result-icon{font-size:48px}.result h2{margin:8px 0}.result p{color:#929caf;font-size:13px;line-height:1.5}
 
+
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#111;color:#fff;overflow:hidden;touch-action:manipulation}
+.screen{width:100vw;height:100vh;display:none}
+.screen.active{display:flex}
+
+/* HOME / MENUS */
+#home,#garage,#missions,#daily,#leaderboard{
+  background:linear-gradient(160deg,#10182f,#28134a);
+  flex-direction:column;align-items:center
+}
+#home{justify-content:center;padding:20px}
+.racingLogo{font-size:48px;margin-bottom:5px}
+h1{font-size:42px;margin:0}
+.subtitle{color:#aaa;margin-bottom:22px}
+.stats{display:flex;gap:7px;margin-bottom:18px}
+.stat{background:rgba(255,255,255,.1);padding:9px 12px;border-radius:15px;text-align:center}
+.stat b{display:block;font-size:20px}
+button{border:0;border-radius:15px;padding:14px 20px;font-size:17px;font-weight:bold;cursor:pointer}
+.startBtn{width:240px;background:#ffcc00;color:#111;margin-bottom:10px}
+.garageBtn,.missionBtn,.dailyBtn,.leaderboardBtn{width:240px;background:rgba(255,255,255,.12);color:#fff;margin-bottom:10px}
+
+#garage,#missions,#daily,#leaderboard{padding:25px 15px;overflow-y:auto}
+#garage h2{margin:5px 0}
+.garageCoins{background:rgba(255,255,255,.1);padding:10px 18px;border-radius:14px;margin:10px 0 15px;font-weight:bold}
+.cars,.missionList,.rewardList,.leaderList{width:100%;max-width:460px}
+.car{background:rgba(255,255,255,.1);border:2px solid transparent;padding:14px;border-radius:18px;margin:9px 0;display:flex;align-items:center;gap:12px}
+.car.selected{border-color:#ffcc00}
+.carEmoji{font-size:42px;width:55px;text-align:center}
+.carInfo{flex:1}.carInfo b{font-size:18px}.carInfo small{color:#aaa;line-height:1.6}
+.carAction{min-width:90px;padding:10px 8px;font-size:13px}
+.buyBtn{background:#ffcc00;color:#111}.selectBtn{background:#fff;color:#111}.selectedBtn{background:#444;color:#aaa}.locked{opacity:.85}
+
+.missionHeader{width:100%;max-width:460px;display:flex;align-items:center;justify-content:space-between}
+.missionHeader h2{margin:5px 0}.missionCoins{background:rgba(255,255,255,.1);padding:9px 13px;border-radius:12px;font-weight:bold}
+.missionList{margin-top:15px}.mission{background:rgba(255,255,255,.1);border-radius:18px;padding:16px;margin-bottom:12px}
+.missionTitle{font-size:18px;font-weight:bold}.missionDescription{color:#aaa;margin-top:5px;font-size:14px}
+.progressBar{height:9px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:12px}
+.progressFill{height:100%;width:0%;background:#ffcc00;border-radius:10px;transition:width .35s ease}
+.missionBottom{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.missionProgress{color:#ccc;font-size:13px}.missionReward{font-weight:bold;color:#ffcc00}
+.completed{border:2px solid #35d07f}.completed .progressFill{width:100%!important;background:#35d07f}.completedText{color:#35d07f;font-weight:bold}
+
+.dailyHeader{width:100%;max-width:460px;text-align:center}.dailyHeader h2{margin:5px 0;font-size:28px}
+.streak{display:inline-block;background:rgba(255,255,255,.1);padding:9px 16px;border-radius:14px;margin:8px 0 15px;font-weight:bold}
+.rewardDay{background:rgba(255,255,255,.1);border:2px solid transparent;border-radius:16px;padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.rewardDay.claimed{border-color:#35d07f;opacity:.75}.rewardDay.current{border-color:#ffcc00}
+.rewardNumber{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-weight:bold}
+.rewardInfo{flex:1}.rewardInfo b{font-size:16px}.rewardInfo small{color:#aaa}.rewardAmount{color:#ffcc00;font-weight:bold}
+.claimBtn{background:#ffcc00;color:#111;padding:10px 13px;font-size:13px}.claimedBtn{background:#35d07f;color:#fff;padding:10px 13px;font-size:13px}
+
+.leaderHeader{width:100%;max-width:460px;text-align:center}.leaderHeader h2{margin:5px 0;font-size:28px}
+.leaderSub{color:#aaa;margin:5px 0 18px;font-size:13px}
+.leaderRow{background:rgba(255,255,255,.1);border-radius:15px;padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.leaderRow.me{border:2px solid #ffcc00}.rank{width:38px;font-size:20px;text-align:center}.playerName{flex:1;font-weight:bold}
+.playerScore{text-align:right}.playerScore b{display:block}.playerScore small{color:#aaa}.emptyLeaderboard{text-align:center;color:#aaa;padding:30px}
+
+/* RACE */
+#race{position:relative;background:#222;flex-direction:column}
+.hud{position:absolute;top:10px;left:8px;right:8px;z-index:20;display:flex;justify-content:space-between;gap:4px}
+.hud span{background:rgba(0,0,0,.65);padding:7px;border-radius:10px;font-weight:bold;font-size:13px;white-space:nowrap}
+
+.road{
+  position:absolute;left:12%;right:12%;top:0;bottom:0;
+  background:repeating-linear-gradient(to bottom,#444 0,#444 45px,#555 45px,#555 90px);
+  border-left:7px solid #ddd;border-right:7px solid #ddd;overflow:hidden;
+  transition:background .8s ease,border-color .8s ease
+}
+.road:before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;
+  background:linear-gradient(90deg,rgba(0,0,0,.55),transparent 20%,transparent 80%,rgba(0,0,0,.55))
+}
+.road.theme-night{background:repeating-linear-gradient(to bottom,#20263b 0,#20263b 45px,#29304a 45px,#29304a 90px);border-color:#8b94b8}
+.road.theme-neon{background:repeating-linear-gradient(to bottom,#25204a 0,#25204a 45px,#34275b 45px,#34275b 90px);border-color:#b7a5ff}
+.road.theme-sunset{background:repeating-linear-gradient(to bottom,#513d39 0,#513d39 45px,#63483e 45px,#63483e 90px);border-color:#ffd0a3}
+
+.laneLine{position:absolute;top:-100px;bottom:-100px;width:5px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 60px,transparent 60px,transparent 120px);opacity:.7;animation:roadLines .55s linear infinite}
+@keyframes roadLines{from{transform:translateY(-120px)}to{transform:translateY(0)}}
+.lane1{left:33.33%}.lane2{left:66.66%}
+
+.carPlayer,.traffic,.coin,.powerup{position:absolute;z-index:5;user-select:none}
+.carPlayer{
+  font-size:48px;bottom:80px;
+  transform:translateX(-50%) rotate(0deg) scale(1);
+  transition:left .20s cubic-bezier(.22,.75,.3,1),transform .20s cubic-bezier(.22,.75,.3,1);
+  will-change:left,transform;
+  filter:drop-shadow(0 5px 4px rgba(0,0,0,.45))
+}
+.carPlayer.turnLeft{transform:translateX(-50%) rotate(-8deg) scale(1.04)}
+.carPlayer.turnRight{transform:translateX(-50%) rotate(8deg) scale(1.04)}
+.carPlayer.shielded{filter:drop-shadow(0 0 10px #58a6ff)}
+.traffic{font-size:45px;transform:translateX(-50%);filter:drop-shadow(0 4px 3px rgba(0,0,0,.45))}
+.coin{font-size:28px;transform:translateX(-50%);filter:drop-shadow(0 0 6px rgba(255,204,0,.8));animation:coinSpin .55s linear infinite}
+@keyframes coinSpin{50%{transform:translateX(-50%) scale(.75) rotateY(180deg)}}
+.powerup{font-size:32px;transform:translateX(-50%);filter:drop-shadow(0 0 9px rgba(255,255,255,.9));animation:powerFloat .7s ease-in-out infinite alternate}
+@keyframes powerFloat{to{transform:translateX(-50%) translateY(-6px) scale(1.08)}}
+
+.powerStatus{position:absolute;top:55px;left:0;right:0;z-index:25;display:flex;justify-content:center;gap:7px;pointer-events:none}
+.statusItem{background:rgba(0,0,0,.75);border-radius:12px;padding:6px 9px;font-size:13px;font-weight:bold;display:none}
+.statusItem.show{display:block}
+
+.controls{position:absolute;bottom:20px;left:0;right:0;z-index:30;display:flex;justify-content:space-between;padding:0 25px}
+.controlBtn{width:90px;height:65px;padding:0;font-size:30px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.3);transition:transform .1s,background .1s}
+.controlBtn:active{transform:scale(.92);background:rgba(255,255,255,.32)}
+
+.countdown{position:absolute;inset:0;z-index:50;display:flex;justify-content:center;align-items:center;font-size:90px;font-weight:bold;background:rgba(0,0,0,.45);animation:countPop .45s ease}
+@keyframes countPop{from{transform:scale(1.35);opacity:0}to{transform:scale(1);opacity:1}}
+.hidden{display:none!important}
+
+/* SPEED EFFECT */
+.speedFX{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;transition:opacity .3s}
+.speedFX.active{opacity:1}
+.speedFX span{position:absolute;width:3px;height:42px;background:rgba(255,255,255,.5);border-radius:4px;top:-60px;animation:speedDrop .42s linear infinite}
+@keyframes speedDrop{to{transform:translateY(calc(100vh + 100px))}}
+.speedFX span:nth-child(1){left:18%;animation-delay:.05s}.speedFX span:nth-child(2){left:28%;animation-delay:.2s}
+.speedFX span:nth-child(3){left:39%;animation-delay:.1s}.speedFX span:nth-child(4){left:51%;animation-delay:.3s}
+.speedFX span:nth-child(5){left:63%;animation-delay:.15s}.speedFX span:nth-child(6){left:74%;animation-delay:.35s}
+.speedFX span:nth-child(7){left:84%;animation-delay:.08s}.speedFX span:nth-child(8){left:91%;animation-delay:.25s}
+.speedFX.fast span{animation-duration:.25s;height:55px}
+
+.crashShake{animation:crashShake .32s ease}
+.crashFlash:after{content:"";position:absolute;inset:0;background:rgba(255,60,30,.45);z-index:40;pointer-events:none;animation:flash .32s ease}
+@keyframes crashShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+@keyframes flash{from{opacity:1}to{opacity:0}}
+
+.pickupFX{position:absolute;z-index:60;pointer-events:none;font-size:28px;transform:translate(-50%,-50%);animation:pickup .55s ease-out forwards}
+@keyframes pickup{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}60%{opacity:1;transform:translate(-50%,-90px) scale(1.25)}100%{opacity:0;transform:translate(-50%,-125px) scale(.8)}}
+.spark{position:absolute;z-index:59;width:6px;height:6px;border-radius:50%;background:#ffcc00;pointer-events:none;animation:spark .45s ease-out forwards}
+@keyframes spark{to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
+
+.gameOver{position:absolute;inset:0;z-index:100;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;text-align:center;flex-direction:column}
+.gameOver h2{font-size:40px;margin:0 0 10px}.gameOver p{color:#ccc;line-height:1.7;margin:4px 20px}
+.bestBadge{font-size:20px;font-weight:bold;color:#ffcc00;margin:5px 0}
+.againBtn{background:#ffcc00;color:#111;margin-top:15px}.homeBtn{background:#333;color:#fff;margin-top:10px}
+
+@media(max-width:380px){
+ .hud{gap:2px}.hud span{font-size:10px;padding:6px 4px}.powerStatus{top:52px}
+ .statusItem{font-size:11px;padding:5px 6px}.carEmoji{font-size:35px;width:45px}
+ .carInfo b{font-size:15px}.carInfo small{font-size:11px}.carAction{min-width:75px;font-size:11px}
+}
+
+/* CoinPlay + Turbo Rush integration */
+body{overflow:auto;touch-action:manipulation}
+.cp-logo{font-size:23px;font-weight:900;letter-spacing:-.5px}.cp-logo span{color:#ffc83d}
+.racing-page{position:fixed!important;inset:0;z-index:50;width:100vw!important;max-width:none!important;margin:0!important;padding:0!important;background:#111;overflow:hidden}
+.racing-page .screen{width:100vw;height:100vh}
+.racing-page .racingLogo{font-size:48px;margin-bottom:5px}
+#racingPage .screen button{font-family:Arial,sans-serif}
+#racingPage{color:#fff}
+.math-shell{padding:18px;background:#121827;border:1px solid #2b3449;border-radius:20px}
+.math-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.math-label{display:block;color:#8f99ae;font-size:10px;letter-spacing:1px;margin-bottom:3px}
+.math-head b{font-size:13px}
+.math-time{background:#252e43;padding:8px 11px;border-radius:10px;color:#ffc83d}
+.math-problem{text-align:center;font-size:40px;font-weight:900;padding:28px 10px;background:#1b2335;border-radius:18px;margin-bottom:14px}
+.math-options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.math-option{border:0;border-radius:13px;padding:16px;background:#252e43;color:#fff;font-size:20px;font-weight:900;cursor:pointer}
+.math-option:active{transform:scale(.97)}
+.math-message{text-align:center;min-height:20px;color:#9ba5b9;font-size:12px;margin-top:14px}
+@media(max-width:380px){.math-problem{font-size:34px}.math-option{padding:14px;font-size:18px}}
+
 </style>
 </head>
 <body>
+
 <main class="app">
 <header class="top">
-  <div class="logo">Coin<span>Play</span></div>
+  <div class="cp-logo">Coin<span>Play</span></div>
   <div class="wallet-mini"><small>BALANCE</small><b id="mini">0 🪙</b></div>
 </header>
 
@@ -77,17 +241,17 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
   <div class="sub">Choose a game and complete a round.</div>
   <article class="game-card">
     <div class="game-card-top"><div class="icon">🧩</div><div><h3>Puzzle</h3><p>Arrange the tiles as quickly as you can.</p></div></div>
-    <div class="reward">🏆 Reward system will be added with the completed game.</div>
+    <div class="reward">🏆 Complete the game to earn 10 🪙.</div>
     <button class="start" data-game="puzzle">PLAY PUZZLE</button>
   </article>
   <article class="game-card">
     <div class="game-card-top"><div class="icon">🏎️</div><div><h3>Turbo Racing</h3><p>Dodge obstacles and survive the road.</p></div></div>
-    <div class="reward">🏆 Reward system will be added with the completed game.</div>
+    <div class="reward">🏆 Complete the game to earn 10 🪙.</div>
     <button class="start" data-game="racing">PLAY RACING</button>
   </article>
   <article class="game-card">
     <div class="game-card-top"><div class="icon">🧠</div><div><h3>Mental Math</h3><p>Answer calculations before time runs out.</p></div></div>
-    <div class="reward">🏆 Reward system will be added with the completed game.</div>
+    <div class="reward">🏆 Complete the game to earn 10 🪙.</div>
     <button class="start" data-game="math">PLAY MENTAL MATH</button>
   </article>
 </section>
@@ -112,6 +276,23 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
   <button type="button" class="start" id="puzzleBack" style="width:100%;margin-top:12px">← BACK TO GAMES</button>
 </section>
 
+
+<section id="mathPage" class="page">
+  <div class="big-title">🧠 Mental Math</div>
+  <div class="sub">Solve 10 questions before the timer runs out.</div>
+  <div class="math-shell">
+    <div class="math-head">
+      <div><span class="math-label">QUESTION</span><b id="mathQuestionNo">1 / 10</b></div>
+      <div class="math-time">⏱️ <b id="mathTimer">15</b>s</div>
+    </div>
+    <div class="math-problem" id="mathProblem">7 + 5 = ?</div>
+    <div class="math-options" id="mathOptions"></div>
+    <div class="math-message" id="mathMessage">Choose the correct answer.</div>
+  </div>
+  <div id="mathResult" style="display:none" class="result"></div>
+  <button type="button" class="start" id="mathBack" style="width:100%;margin-top:12px">← BACK TO GAMES</button>
+</section>
+
 <section id="walletPage" class="page">
   <div class="big-title">💰 Wallet</div>
   <div class="sub">Your coins and withdrawal requests.</div>
@@ -125,6 +306,97 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 </section>
 </main>
 
+<section id="racingPage" class="page racing-page">
+<div id="home" class="screen active">
+  <div class="racingLogo">🏎️</div><h1>Turbo Rush</h1>
+  <div class="subtitle">Dodge. Drive. Survive.</div>
+  <div class="stats">
+    <div class="stat">🪙<b id="homeCoins">0</b>Coins</div>
+    <div class="stat">🏆<b id="homeBest">0</b>Best</div>
+    <div class="stat">🏁<b id="homeRaces">0</b>Races</div>
+  </div>
+  <button class="startBtn" id="startButton">▶ START RACE</button>
+  <button class="garageBtn" id="garageButton">🚘 GARAGE</button>
+  <button class="missionBtn" id="missionButton">🎯 MISSIONS</button>
+  <button class="dailyBtn" id="dailyButton">🎁 DAILY REWARD</button>
+  <button class="leaderboardBtn" id="leaderboardButton">🏆 LEADERBOARD</button>
+</div>
+
+<div id="garage" class="screen">
+  <h2>🚘 Your Garage</h2>
+  <div class="garageCoins">🪙 Coins: <span id="garageCoins">0</span></div>
+  <div class="cars">
+    <div class="car" data-car="0"><div class="carEmoji">🚗</div><div class="carInfo"><b>Street Fox</b><br><small>Speed: ★★★☆☆<br>Free starter car</small></div><button class="carAction">SELECT</button></div>
+    <div class="car" data-car="1"><div class="carEmoji">🏎️</div><div class="carInfo"><b>Rapid GT</b><br><small>Speed: ★★★★☆<br>Price: 🪙 100</small></div><button class="carAction">BUY 100</button></div>
+    <div class="car" data-car="2"><div class="carEmoji">🚀</div><div class="carInfo"><b>Rocket</b><br><small>Speed: ★★★★☆<br>Price: 🪙 300</small></div><button class="carAction">BUY 300</button></div>
+    <div class="car" data-car="3"><div class="carEmoji">⚡</div><div class="carInfo"><b>Volt</b><br><small>Speed: ★★★★★<br>Price: 🪙 700</small></div><button class="carAction">BUY 700</button></div>
+  </div>
+  <button class="startBtn" id="garageStart">▶ START RACE</button>
+  <button class="garageBtn" id="backHome">← BACK</button>
+</div>
+
+<div id="missions" class="screen">
+  <div class="missionHeader"><h2>🎯 Missions</h2><div class="missionCoins">🪙 <span id="missionCoins">0</span></div></div>
+  <p style="color:#aaa;">Complete missions and earn bonus coins.</p>
+  <div class="missionList">
+    <div class="mission" id="mission1"><div class="missionTitle">🪙 Coin Collector</div><div class="missionDescription">Collect 50 coins</div><div class="progressBar"><div class="progressFill" id="progress1"></div></div><div class="missionBottom"><span class="missionProgress" id="missionProgress1">0 / 50</span><span class="missionReward">+100 🪙</span></div></div>
+    <div class="mission" id="mission2"><div class="missionTitle">📏 Long Drive</div><div class="missionDescription">Drive 1,000 meters</div><div class="progressBar"><div class="progressFill" id="progress2"></div></div><div class="missionBottom"><span class="missionProgress" id="missionProgress2">0 / 1000m</span><span class="missionReward">+150 🪙</span></div></div>
+    <div class="mission" id="mission3"><div class="missionTitle">⚡ Power Hunter</div><div class="missionDescription">Collect 5 power-ups</div><div class="progressBar"><div class="progressFill" id="progress3"></div></div><div class="missionBottom"><span class="missionProgress" id="missionProgress3">0 / 5</span><span class="missionReward">+200 🪙</span></div></div>
+  </div>
+  <button class="missionBtn" id="missionsBack">← BACK</button>
+</div>
+
+<div id="daily" class="screen">
+  <div class="dailyHeader"><h2>🎁 Daily Rewards</h2><div class="streak">🔥 Streak: <span id="streakNumber">0</span> days</div></div>
+  <div class="rewardList" id="rewardList"></div>
+  <button class="dailyBtn" id="dailyBack">← BACK</button>
+</div>
+
+<div id="leaderboard" class="screen">
+  <div class="leaderHeader"><h2>🏆 Leaderboard</h2><div class="leaderSub">Your best local scores</div></div>
+  <div class="leaderList" id="leaderList"></div>
+  <button class="leaderboardBtn" id="leaderboardBack">← BACK</button>
+</div>
+
+<div id="race" class="screen">
+  <div class="hud">
+    <span>🏆 <span id="score">0</span></span>
+    <span>🪙 <span id="raceCoins">0</span></span>
+    <span>📏 <span id="distance">0</span>m</span>
+    <span>❤️ <span id="lives">3</span></span>
+  </div>
+
+  <div class="powerStatus">
+    <div id="shieldStatus" class="statusItem">🛡️ SHIELD</div>
+    <div id="turboStatus" class="statusItem">⚡ TURBO</div>
+    <div id="magnetStatus" class="statusItem">🧲 MAGNET</div>
+  </div>
+
+  <div class="road" id="road">
+    <div class="laneLine lane1"></div><div class="laneLine lane2"></div>
+    <div class="speedFX" id="speedFX">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div id="player" class="carPlayer">🚗</div>
+  </div>
+
+  <div id="countdown" class="countdown">3</div>
+
+  <div class="controls">
+    <button class="controlBtn" id="leftButton">⬅️</button>
+    <button class="controlBtn" id="rightButton">➡️</button>
+  </div>
+
+  <div id="gameOver" class="gameOver hidden">
+    <h2>💥 CRASH!</h2>
+    <div id="bestBadge" class="bestBadge hidden">🏆 NEW BEST!</div>
+    <p id="finalText"></p>
+    <button class="againBtn" id="againButton">🔄 RACE AGAIN</button>
+    <button class="homeBtn" id="raceHome">🏠 HOME</button>
+  </div>
+</div>
+</section>
 <nav class="bottom">
   <button class="nav active" data-page="home"><div>🏠</div>Home</button>
   <button class="nav" data-page="games"><div>🎮</div>Games</button>
@@ -132,12 +404,21 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 </nav>
 <div class="toast" id="toast"></div>
 
+
 <script>
+
 (() => {
-  let coins = 0;
-  const pages = {home:document.getElementById("homePage"),games:document.getElementById("gamesPage"),puzzle:document.getElementById("puzzlePage"),wallet:document.getElementById("walletPage")};
-  const navs = document.querySelectorAll(".nav");
-  const toastEl = document.getElementById("toast");
+  let coins = Number(localStorage.getItem("coinPlayCoins") || 0);
+  const pages = {
+    home:document.getElementById("homePage"),
+    games:document.getElementById("gamesPage"),
+    puzzle:document.getElementById("puzzlePage"),
+    math:document.getElementById("mathPage"),
+    wallet:document.getElementById("walletPage"),
+    racing:document.getElementById("racingPage")
+  };
+  const navs=document.querySelectorAll(".nav");
+  const toastEl=document.getElementById("toast");
 
   function render(){
     const n=coins.toLocaleString("en-IN");
@@ -147,113 +428,485 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
     document.getElementById("walletCoins").textContent=n;
     document.getElementById("walletRupee").textContent="₹"+(coins/100).toFixed(2);
   }
+  function setCoins(value){
+    coins=Math.max(0,Number(value)||0);
+    localStorage.setItem("coinPlayCoins",String(coins));
+    render();
+  }
+  function addCoins(amount){
+    setCoins(coins+amount);
+  }
   function toast(text){
-    toastEl.textContent=text; toastEl.style.display="block";
+    toastEl.textContent=text;toastEl.style.display="block";
     clearTimeout(window.__coinToast);
     window.__coinToast=setTimeout(()=>toastEl.style.display="none",2200);
   }
   function showPage(name){
+    if(name==="racing"){
+      Object.keys(pages).forEach(k=>pages[k].classList.toggle("active",k==="racing"));
+      navs.forEach(n=>n.classList.remove("active"));
+      if(window.showScreen && window.home) window.showScreen(window.home);
+      return;
+    }
     Object.keys(pages).forEach(k=>pages[k].classList.toggle("active",k===name));
     navs.forEach(n=>n.classList.toggle("active",n.dataset.page===name));
+    if(name!=="racing") document.querySelector(".bottom").style.display="grid";
     window.scrollTo({top:0,behavior:"smooth"});
+    setCoins(Number(localStorage.getItem("coinPlayCoins")||0));
   }
+  window.coinPlayShowPage=showPage;
+  window.coinPlayRefresh=(value)=>{coins=Math.max(0,Number(value)||0);render()};
+
   navs.forEach(n=>n.addEventListener("click",()=>showPage(n.dataset.page)));
   document.querySelectorAll("[data-page]").forEach(el=>{
-    if(el.classList.contains("nav")) return;
+    if(el.classList.contains("nav"))return;
     el.addEventListener("click",()=>showPage(el.dataset.page));
   });
-  let puzzleBoard = [];
-  let puzzleSelected = -1;
-  let puzzleRound = 1;
-  let puzzleMoves = 0;
-  const PUZZLE_ROUNDS = 3;
 
+  // PUZZLE
+  let puzzleBoard=[],puzzleSelected=-1,puzzleRound=1,puzzleMoves=0;
+  const PUZZLE_ROUNDS=3;
   function puzzleShuffleBoard(){
-    puzzleBoard = [1,2,3,4,5,6,7,8,9];
+    puzzleBoard=[1,2,3,4,5,6,7,8,9];
     for(let i=puzzleBoard.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
       [puzzleBoard[i],puzzleBoard[j]]=[puzzleBoard[j],puzzleBoard[i]];
     }
-    if(puzzleBoard.every((v,i)=>v===i+1)) [puzzleBoard[0],puzzleBoard[1]]=[puzzleBoard[1],puzzleBoard[0]];
-    puzzleSelected=-1;
-    puzzleMoves=0;
-    renderPuzzle();
+    if(puzzleBoard.every((v,i)=>v===i+1))[puzzleBoard[0],puzzleBoard[1]]=[puzzleBoard[1],puzzleBoard[0]];
+    puzzleSelected=-1;puzzleMoves=0;renderPuzzle();
   }
-
   function renderPuzzle(){
     document.getElementById("puzzleRound").textContent="Round "+puzzleRound+" of "+PUZZLE_ROUNDS;
     document.getElementById("puzzleScore").textContent=puzzleMoves+" moves";
-    const grid=document.getElementById("puzzleGrid");
-    grid.innerHTML="";
+    const grid=document.getElementById("puzzleGrid");grid.innerHTML="";
     puzzleBoard.forEach((value,index)=>{
-      const b=document.createElement("button");
-      b.type="button"; b.className="tile"+(index===puzzleSelected?" selected":"");
-      b.textContent=value;
-      b.addEventListener("click",()=>selectPuzzleTile(index));
-      grid.appendChild(b);
+      const b=document.createElement("button");b.type="button";
+      b.className="tile"+(index===puzzleSelected?" selected":"");b.textContent=value;
+      b.addEventListener("click",()=>selectPuzzleTile(index));grid.appendChild(b);
     });
   }
-
   function selectPuzzleTile(index){
-    if(puzzleSelected===-1){
-      puzzleSelected=index;
-      document.getElementById("puzzleMessage").textContent="Now tap another tile to swap.";
-    }else if(puzzleSelected===index){
-      puzzleSelected=-1;
-      document.getElementById("puzzleMessage").textContent="Tap two tiles to swap them.";
-    }else{
-      [puzzleBoard[puzzleSelected],puzzleBoard[index]]=[puzzleBoard[index],puzzleBoard[puzzleSelected]];
-      puzzleMoves++;
-      puzzleSelected=-1;
-      document.getElementById("puzzleMessage").textContent="Keep going — arrange 1 to 9.";
-    }
+    if(puzzleSelected===-1){puzzleSelected=index;document.getElementById("puzzleMessage").textContent="Now tap another tile to swap."}
+    else if(puzzleSelected===index){puzzleSelected=-1;document.getElementById("puzzleMessage").textContent="Tap two tiles to swap them."}
+    else{[puzzleBoard[puzzleSelected],puzzleBoard[index]]=[puzzleBoard[index],puzzleBoard[puzzleSelected]];puzzleMoves++;puzzleSelected=-1;document.getElementById("puzzleMessage").textContent="Keep going — arrange 1 to 9."}
     renderPuzzle();
   }
-
   function checkPuzzle(){
     const solved=puzzleBoard.every((v,i)=>v===i+1);
-    if(!solved){
-      document.getElementById("puzzleMessage").textContent="Not solved yet. Keep arranging the tiles.";
-      return;
-    }
-    if(puzzleRound<PUZZLE_ROUNDS){
-      puzzleRound++;
-      document.getElementById("puzzleMessage").textContent="Great! Next round.";
-      puzzleShuffleBoard();
-      return;
-    }
-    coins += 10;
-    render();
+    if(!solved){document.getElementById("puzzleMessage").textContent="Not solved yet. Keep arranging the tiles.";return}
+    if(puzzleRound<PUZZLE_ROUNDS){puzzleRound++;document.getElementById("puzzleMessage").textContent="Great! Next round.";puzzleShuffleBoard();return}
+    addCoins(10);
     document.getElementById("puzzleGrid").style.display="none";
     document.querySelector(".puzzle-actions").style.display="none";
     document.getElementById("puzzleResult").style.display="block";
     document.getElementById("puzzleResult").innerHTML='<div class="result-icon">🎉</div><h2>Puzzle Complete!</h2><p>You completed all 3 rounds in '+puzzleMoves+' moves.</p><p><strong style="color:#ffc83d">+10 🪙 coins added</strong></p>';
   }
-
   function openPuzzle(){
-    showPage("puzzle");
-    puzzleRound=1;
+    showPage("puzzle");puzzleRound=1;
     document.getElementById("puzzleGrid").style.display="grid";
     document.querySelector(".puzzle-actions").style.display="flex";
     document.getElementById("puzzleResult").style.display="none";
     document.getElementById("puzzleMessage").textContent="Tap two tiles to swap them.";
     puzzleShuffleBoard();
   }
+  document.getElementById("puzzleShuffle").addEventListener("click",puzzleShuffleBoard);
+  document.getElementById("puzzleCheck").addEventListener("click",checkPuzzle);
+  document.getElementById("puzzleBack").addEventListener("click",()=>showPage("games"));
+
+  // MENTAL MATH
+  let mathIndex=0,mathScore=0,mathTimer=15,mathInterval=null,mathAnswer=0,mathLocked=false;
+  const MATH_TOTAL=10;
+  function makeMathQuestion(){
+    mathLocked=false;
+    mathTimer=15;
+    clearInterval(mathInterval);
+    const type=Math.floor(Math.random()*4);
+    let a,b,op;
+    if(type===0){a=Math.floor(Math.random()*20)+5;b=Math.floor(Math.random()*20)+1;op="+";mathAnswer=a+b}
+    else if(type===1){a=Math.floor(Math.random()*30)+10;b=Math.floor(Math.random()*9)+1;if(b>a)[a,b]=[b,a];op="−";mathAnswer=a-b}
+    else if(type===2){a=Math.floor(Math.random()*9)+2;b=Math.floor(Math.random()*9)+2;op="×";mathAnswer=a*b}
+    else {b=Math.floor(Math.random()*8)+2;mathAnswer=Math.floor(Math.random()*10)+2;a=b*mathAnswer;op="÷"}
+    document.getElementById("mathProblem").textContent=a+" "+op+" "+b+" = ?";
+    document.getElementById("mathQuestionNo").textContent=(mathIndex+1)+" / "+MATH_TOTAL;
+    document.getElementById("mathTimer").textContent=mathTimer;
+    document.getElementById("mathMessage").textContent="Choose the correct answer.";
+    const opts=new Set([mathAnswer]);
+    while(opts.size<4){const delta=Math.floor(Math.random()*11)-5;opts.add(mathAnswer+delta+(delta===0?1:0))}
+    const arr=[...opts].sort(()=>Math.random()-.5);
+    const box=document.getElementById("mathOptions");box.innerHTML="";
+    arr.forEach(v=>{const b=document.createElement("button");b.className="math-option";b.textContent=v;b.addEventListener("click",()=>answerMath(v));box.appendChild(b)});
+    mathInterval=setInterval(()=>{mathTimer--;document.getElementById("mathTimer").textContent=mathTimer;if(mathTimer<=0){clearInterval(mathInterval);answerMath(null)}},1000);
+  }
+  function answerMath(value){
+    if(mathLocked)return;mathLocked=true;clearInterval(mathInterval);
+    if(value===mathAnswer){mathScore++;document.getElementById("mathMessage").textContent="✅ Correct!"}
+    else document.getElementById("mathMessage").textContent="❌ Wrong — answer was "+mathAnswer+".";
+    document.querySelectorAll(".math-option").forEach(b=>b.disabled=true);
+    setTimeout(()=>{mathIndex++;if(mathIndex<MATH_TOTAL)makeMathQuestion();else finishMath()},650);
+  }
+  function finishMath(){
+    document.getElementById("mathOptions").innerHTML="";
+    document.getElementById("mathProblem").textContent="Finished!";
+    document.getElementById("mathTimer").textContent="0";
+    document.getElementById("mathResult").style.display="block";
+    document.getElementById("mathResult").innerHTML='<div class="result-icon">🧠</div><h2>Math Complete!</h2><p>You scored <b>'+mathScore+'/'+MATH_TOTAL+'</b>.</p><p><strong style="color:#ffc83d">+10 🪙 coins added</strong></p>';
+    addCoins(10);
+  }
+  function openMath(){
+    showPage("math");mathIndex=0;mathScore=0;
+    document.getElementById("mathResult").style.display="none";
+    makeMathQuestion();
+  }
+  document.getElementById("mathBack").addEventListener("click",()=>{clearInterval(mathInterval);showPage("games")});
 
   document.querySelectorAll("[data-game]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const game=btn.dataset.game;
-      if(game==="puzzle") openPuzzle();
-      else { showPage("games"); toast(game==="racing"?"Racing is next to build.":"Mental Math is next to build."); }
+      if(game==="puzzle")openPuzzle();
+      else if(game==="math")openMath();
+      else if(game==="racing"){showPage("racing");}
     });
   });
-  document.getElementById("puzzleShuffle").addEventListener("click",puzzleShuffleBoard);
-  document.getElementById("puzzleCheck").addEventListener("click",checkPuzzle);
-  document.getElementById("puzzleBack").addEventListener("click",()=>showPage("games"));
+
   document.getElementById("watch").addEventListener("click",()=>toast("AdsGram will be connected after the app is finished."));
   document.getElementById("withdraw").addEventListener("click",()=>toast("Withdrawal form is the next wallet step."));
+
   render();
+  window.coinPlayShowPage("home");
 })();
+
+</script>
+<script>
+
+const cars=[
+ {emoji:"🚗",speed:1.00,price:0},
+ {emoji:"🏎️",speed:1.08,price:100},
+ {emoji:"🚀",speed:1.16,price:300},
+ {emoji:"⚡",speed:1.25,price:700}
+];
+const dailyRewards=[25,50,75,100,150,200,500];
+
+let saved=JSON.parse(localStorage.getItem("turboRush"))||{};
+const storedCoinPlay=localStorage.getItem("coinPlayCoins");
+if(storedCoinPlay!==null && !Number.isNaN(Number(storedCoinPlay))) saved.coins=Number(storedCoinPlay);
+if(typeof saved.coins!=="number")saved.coins=0;
+if(typeof saved.best!=="number")saved.best=0;
+if(typeof saved.races!=="number")saved.races=0;
+if(typeof saved.car!=="number")saved.car=0;
+if(!Array.isArray(saved.unlocked))saved.unlocked=[0];
+if(!saved.unlocked.includes(0))saved.unlocked.push(0);
+
+if(!saved.missions)saved.missions={coins:0,distance:0,powerups:0,coinRewarded:false,distanceRewarded:false,powerupRewarded:false};
+if(typeof saved.missions.coins!=="number")saved.missions.coins=0;
+if(typeof saved.missions.distance!=="number")saved.missions.distance=0;
+if(typeof saved.missions.powerups!=="number")saved.missions.powerups=0;
+if(typeof saved.missions.coinRewarded!=="boolean")saved.missions.coinRewarded=false;
+if(typeof saved.missions.distanceRewarded!=="boolean")saved.missions.distanceRewarded=false;
+if(typeof saved.missions.powerupRewarded!=="boolean")saved.missions.powerupRewarded=false;
+
+if(typeof saved.dailyStreak!=="number")saved.dailyStreak=0;
+if(typeof saved.dailyLastClaim!=="string")saved.dailyLastClaim="";
+if(typeof saved.dailyDay!=="number")saved.dailyDay=0;
+if(!Array.isArray(saved.leaderboard))saved.leaderboard=[];
+saveGame();
+
+let running=false,playerLane=1,score=0,distance=0,raceCoins=0,lives=3,difficulty=1,hitCooldown=0;
+let traffic=[],coins=[],powerups=[],lastTime=0,spawnTimer=0,coinTimer=0,powerupTimer=0,animationFrame;
+let shieldActive=false,turboTime=0,magnetTime=0,laneChangeTimer=null;
+
+const home=document.getElementById("home"),garage=document.getElementById("garage"),missions=document.getElementById("missions"),daily=document.getElementById("daily"),leaderboard=document.getElementById("leaderboard"),race=document.getElementById("race");
+const startButton=document.getElementById("startButton"),garageButton=document.getElementById("garageButton"),missionButton=document.getElementById("missionButton"),dailyButton=document.getElementById("dailyButton"),leaderboardButton=document.getElementById("leaderboardButton");
+const garageStart=document.getElementById("garageStart"),backHome=document.getElementById("backHome"),missionsBack=document.getElementById("missionsBack"),dailyBack=document.getElementById("dailyBack"),leaderboardBack=document.getElementById("leaderboardBack");
+const road=document.getElementById("road"),player=document.getElementById("player"),scoreText=document.getElementById("score"),raceCoinsText=document.getElementById("raceCoins"),distanceText=document.getElementById("distance"),livesText=document.getElementById("lives");
+const countdown=document.getElementById("countdown"),gameOver=document.getElementById("gameOver"),finalText=document.getElementById("finalText"),bestBadge=document.getElementById("bestBadge"),leftButton=document.getElementById("leftButton"),rightButton=document.getElementById("rightButton"),againButton=document.getElementById("againButton"),raceHome=document.getElementById("raceHome");
+const garageCoinsText=document.getElementById("garageCoins"),missionCoinsText=document.getElementById("missionCoins"),shieldStatus=document.getElementById("shieldStatus"),turboStatus=document.getElementById("turboStatus"),magnetStatus=document.getElementById("magnetStatus"),streakNumber=document.getElementById("streakNumber"),rewardList=document.getElementById("rewardList"),leaderList=document.getElementById("leaderList"),speedFX=document.getElementById("speedFX");
+
+function saveGame(){
+ localStorage.setItem("turboRush",JSON.stringify(saved));
+ localStorage.setItem("coinPlayCoins",String(saved.coins));
+ if(window.coinPlayRefresh)window.coinPlayRefresh(saved.coins);
+}
+function updateHome(){
+ document.getElementById("homeCoins").textContent=saved.coins;
+ document.getElementById("homeBest").textContent=saved.best;
+ document.getElementById("homeRaces").textContent=saved.races;
+}
+function showScreen(screen){
+ [home,garage,missions,daily,leaderboard,race].forEach(s=>s.classList.remove("active"));
+ screen.classList.add("active");
+}
+function vibrate(ms=20){try{if(navigator.vibrate)navigator.vibrate(ms)}catch(e){}}
+
+function updateMissions(){
+ const m=saved.missions;
+ missionCoinsText.textContent=saved.coins;
+ const cp=Math.min(m.coins,50);
+ document.getElementById("missionProgress1").textContent=cp+" / 50";
+ document.getElementById("progress1").style.width=(cp/50*100)+"%";
+ const mp=Math.min(m.distance,1000);
+ document.getElementById("missionProgress2").textContent=Math.floor(mp)+" / 1000m";
+ document.getElementById("progress2").style.width=(mp/1000*100)+"%";
+ const pp=Math.min(m.powerups,5);
+ document.getElementById("missionProgress3").textContent=pp+" / 5";
+ document.getElementById("progress3").style.width=(pp/5*100)+"%";
+
+ [["mission1","missionProgress1",m.coinRewarded],["mission2","missionProgress2",m.distanceRewarded],["mission3","missionProgress3",m.powerupRewarded]].forEach(x=>{
+   const card=document.getElementById(x[0]),txt=document.getElementById(x[1]);
+   card.classList.toggle("completed",x[2]);
+   if(x[2])txt.innerHTML='<span class="completedText">✓ COMPLETED</span>';
+ });
+}
+function checkMissionRewards(){
+ const m=saved.missions;let reward=0;
+ if(m.coins>=50&&!m.coinRewarded){m.coinRewarded=true;reward+=100}
+ if(m.distance>=1000&&!m.distanceRewarded){m.distanceRewarded=true;reward+=150}
+ if(m.powerups>=5&&!m.powerupRewarded){m.powerupRewarded=true;reward+=200}
+ if(reward>0){saved.coins+=reward;saveGame();vibrate(45)}
+}
+missionButton.addEventListener("click",()=>{updateMissions();showScreen(missions)});
+missionsBack.addEventListener("click",()=>{updateHome();showScreen(home)});
+
+function updateGarage(){
+ garageCoinsText.textContent=saved.coins;
+ document.querySelectorAll(".car").forEach(card=>{
+   const index=Number(card.dataset.car),button=card.querySelector(".carAction"),unlocked=saved.unlocked.includes(index);
+   card.classList.remove("selected","locked");
+   if(saved.car===index){
+     card.classList.add("selected");button.textContent="✓ SELECTED";button.className="carAction selectedBtn";button.disabled=true;
+   }else if(unlocked){
+     button.textContent="SELECT";button.className="carAction selectBtn";button.disabled=false;
+   }else{
+     card.classList.add("locked");button.textContent="BUY "+cars[index].price;button.className="carAction buyBtn";button.disabled=false;
+   }
+ });
+}
+document.querySelectorAll(".carAction").forEach(button=>{
+ button.addEventListener("click",event=>{
+  event.stopPropagation();
+  const index=Number(button.closest(".car").dataset.car),car=cars[index];
+  if(!saved.unlocked.includes(index)){
+   if(saved.coins<car.price){alert("You need "+car.price+" coins to unlock this car.");return}
+   saved.coins-=car.price;saved.unlocked.push(index);saved.car=index;saveGame();updateHome();updateGarage();vibrate(40);alert(car.emoji+" Car unlocked!");return;
+  }
+  saved.car=index;saveGame();updateHome();updateGarage();
+ });
+});
+startButton.addEventListener("click",startRace);garageStart.addEventListener("click",startRace);
+garageButton.addEventListener("click",()=>{updateGarage();showScreen(garage)});
+backHome.addEventListener("click",()=>{updateHome();showScreen(home)});
+
+function todayString(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function yesterdayString(){const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function updateDaily(){
+ const today=todayString(),alreadyClaimed=saved.dailyLastClaim===today;
+ streakNumber.textContent=saved.dailyStreak;rewardList.innerHTML="";
+ for(let i=0;i<7;i++){
+  const day=i+1,item=document.createElement("div");item.className="rewardDay";
+  if(day===saved.dailyDay+1&&!alreadyClaimed)item.classList.add("current");
+  if(day<=saved.dailyDay)item.classList.add("claimed");
+  const number=document.createElement("div");number.className="rewardNumber";number.textContent=day;
+  const info=document.createElement("div");info.className="rewardInfo";info.innerHTML="<b>Day "+day+"</b><br><small>Daily reward</small>";
+  const amount=document.createElement("div");amount.className="rewardAmount";amount.textContent="🪙 "+dailyRewards[i];
+  item.append(number,info,amount);
+  if(day===saved.dailyDay+1&&!alreadyClaimed){
+   const b=document.createElement("button");b.className="claimBtn";b.textContent="CLAIM";b.addEventListener("click",claimDailyReward);item.appendChild(b);
+  }else if(day<=saved.dailyDay){
+   const b=document.createElement("button");b.className="claimedBtn";b.textContent="✓ CLAIMED";b.disabled=true;item.appendChild(b);
+  }
+  rewardList.appendChild(item);
+ }
+}
+function claimDailyReward(){
+ const today=todayString();
+ if(saved.dailyLastClaim===today){alert("Today's reward is already claimed.");return}
+ if(saved.dailyLastClaim===yesterdayString())saved.dailyStreak++;else saved.dailyStreak=1;
+ if(saved.dailyStreak>7)saved.dailyStreak=1;
+ saved.dailyDay=saved.dailyStreak;
+ const reward=dailyRewards[saved.dailyDay-1];saved.coins+=reward;saved.dailyLastClaim=today;
+ saveGame();updateHome();updateDaily();vibrate(50);alert("🎁 Daily reward claimed!\n\nYou received "+reward+" coins.");
+}
+dailyButton.addEventListener("click",()=>{updateDaily();showScreen(daily)});
+dailyBack.addEventListener("click",()=>{updateHome();showScreen(home)});
+
+function updateLeaderboard(){
+ leaderList.innerHTML="";const scores=[...saved.leaderboard];
+ if(saved.best>0&&!scores.some(item=>item.score===saved.best*2))scores.push({name:"You",score:saved.best*2,distance:saved.best});
+ scores.sort((a,b)=>b.score-a.score);const top=scores.slice(0,10);
+ if(!top.length){leaderList.innerHTML='<div class="emptyLeaderboard">🏁 Play your first race to appear here!</div>';return}
+ top.forEach((item,index)=>{
+  const row=document.createElement("div");row.className="leaderRow";if(item.name==="You")row.classList.add("me");
+  const rank=document.createElement("div");rank.className="rank";rank.textContent=index===0?"🥇":index===1?"🥈":index===2?"🥉":"#"+(index+1);
+  const name=document.createElement("div");name.className="playerName";name.textContent=item.name;
+  const box=document.createElement("div");box.className="playerScore";box.innerHTML="<b>"+item.score+" pts</b><small>"+Math.floor(item.distance)+"m</small>";
+  row.append(rank,name,box);leaderList.appendChild(row);
+ });
+}
+function addLeaderboardScore(){
+ saved.leaderboard.push({name:"You",score:Math.floor(score),distance:Math.floor(distance)});
+ saved.leaderboard.sort((a,b)=>b.score-a.score);saved.leaderboard=saved.leaderboard.slice(0,20);saveGame();
+}
+leaderboardButton.addEventListener("click",()=>{updateLeaderboard();showScreen(leaderboard)});
+leaderboardBack.addEventListener("click",()=>{updateHome();showScreen(home)});
+
+function clearRaceObjects(){
+ document.querySelectorAll(".traffic,.coin,.powerup,.pickupFX,.spark").forEach(x=>x.remove());
+ traffic=[];coins=[];powerups=[];
+}
+function startRace(){
+ showScreen(race);running=false;cancelAnimationFrame(animationFrame);
+ score=0;distance=0;raceCoins=0;lives=3;difficulty=1;hitCooldown=0;
+ shieldActive=false;turboTime=0;magnetTime=0;playerLane=1;spawnTimer=0;coinTimer=0;powerupTimer=0;
+ clearRaceObjects();
+ player.textContent=cars[saved.car].emoji;player.className="carPlayer";
+ road.classList.remove("theme-night","theme-neon","theme-sunset","crashShake","crashFlash");
+ speedFX.classList.remove("active","fast");gameOver.classList.add("hidden");bestBadge.classList.add("hidden");
+ updatePowerStatus();updateHUD();placePlayer();
+ countdown.classList.remove("hidden");let count=3;countdown.textContent=count;
+ const timer=setInterval(()=>{
+   count--;
+   if(count>0){countdown.textContent=count;countdown.style.animation="none";void countdown.offsetWidth;countdown.style.animation="countPop .45s ease"}
+   else if(count===0){countdown.textContent="GO!";countdown.style.animation="none";void countdown.offsetWidth;countdown.style.animation="countPop .45s ease";vibrate(30)}
+   else{
+    clearInterval(timer);countdown.classList.add("hidden");running=true;lastTime=performance.now();animationFrame=requestAnimationFrame(gameLoop);
+   }
+ },700);
+}
+function placePlayer(direction=0){
+ const width=road.clientWidth,laneWidth=width/3,x=laneWidth*playerLane+laneWidth/2;
+ player.style.left=x+"px";
+ if(direction!==0){
+   player.classList.remove("turnLeft","turnRight");void player.offsetWidth;
+   player.classList.add(direction<0?"turnLeft":"turnRight");
+   clearTimeout(laneChangeTimer);
+   laneChangeTimer=setTimeout(()=>player.classList.remove("turnLeft","turnRight"),220);
+ }
+}
+function moveLeft(){if(!running)return;if(playerLane>0){playerLane--;placePlayer(-1);vibrate(12)}}
+function moveRight(){if(!running)return;if(playerLane<2){playerLane++;placePlayer(1);vibrate(12)}}
+leftButton.addEventListener("click",moveLeft);rightButton.addEventListener("click",moveRight);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")moveLeft();if(e.key==="ArrowRight")moveRight()});
+
+function lanePercent(lane){return ((lane+.5)/3*100)+"%"}
+function spawnTraffic(){
+ const lane=Math.floor(Math.random()*3),vehicle=document.createElement("div");vehicle.className="traffic";
+ const vehicles=["🚙","🚕","🚓","🚚"];vehicle.textContent=vehicles[Math.floor(Math.random()*vehicles.length)];
+ vehicle.style.left=lanePercent(lane);vehicle.style.top="-70px";road.appendChild(vehicle);
+ traffic.push({el:vehicle,lane,y:-70,speed:220+Math.random()*100});
+}
+function spawnCoin(){
+ const lane=Math.floor(Math.random()*3),coin=document.createElement("div");coin.className="coin";coin.textContent="🪙";
+ coin.style.left=lanePercent(lane);coin.style.top="-50px";road.appendChild(coin);coins.push({el:coin,lane,y:-50,speed:230});
+}
+function spawnPowerup(){
+ const lane=Math.floor(Math.random()*3),powerup=document.createElement("div");powerup.className="powerup";
+ const types=[{type:"shield",emoji:"🛡️"},{type:"turbo",emoji:"⚡"},{type:"magnet",emoji:"🧲"},{type:"life",emoji:"❤️"}];
+ const selected=types[Math.floor(Math.random()*types.length)];
+ powerup.textContent=selected.emoji;powerup.dataset.type=selected.type;powerup.style.left=lanePercent(lane);powerup.style.top="-60px";road.appendChild(powerup);
+ powerups.push({el:powerup,lane,y:-60,speed:215,type:selected.type});
+}
+function hitPlayer(objY){
+ const playerY=road.clientHeight-130;return objY>playerY-55&&objY<playerY+55;
+}
+function createPickupFX(el,emoji){
+ if(!el)return;
+ const rect=el.getBoundingClientRect(),roadRect=road.getBoundingClientRect();
+ const fx=document.createElement("div");fx.className="pickupFX";fx.textContent=emoji;
+ fx.style.left=(rect.left-roadRect.left+rect.width/2)+"px";fx.style.top=(rect.top-roadRect.top+rect.height/2)+"px";road.appendChild(fx);
+ for(let i=0;i<6;i++){
+  const s=document.createElement("div");s.className="spark";
+  s.style.left=(rect.left-roadRect.left+rect.width/2)+"px";s.style.top=(rect.top-roadRect.top+rect.height/2)+"px";
+  s.style.setProperty("--dx",(Math.random()*90-45)+"px");s.style.setProperty("--dy",(Math.random()*90-65)+"px");road.appendChild(s);
+  setTimeout(()=>s.remove(),500);
+ }
+ setTimeout(()=>fx.remove(),600);
+}
+function crashEffect(){
+ road.classList.remove("crashShake","crashFlash");void road.offsetWidth;road.classList.add("crashShake","crashFlash");
+ vibrate(80);setTimeout(()=>road.classList.remove("crashShake","crashFlash"),350);
+}
+function activatePowerup(type){
+ if(type==="shield")shieldActive=true;
+ if(type==="turbo")turboTime=5;
+ if(type==="magnet")magnetTime=7;
+ if(type==="life"&&lives<3)lives++;
+ saved.missions.powerups++;checkMissionRewards();saveGame();updateHUD();updatePowerStatus();vibrate(45);
+}
+function updatePowerStatus(){
+ shieldStatus.classList.toggle("show",shieldActive);turboStatus.classList.toggle("show",turboTime>0);magnetStatus.classList.toggle("show",magnetTime>0);
+ player.classList.toggle("shielded",shieldActive);
+}
+function updateTheme(){
+ road.classList.remove("theme-night","theme-neon","theme-sunset");
+ if(distance>=900)road.classList.add("theme-night");
+ else if(distance>=600)road.classList.add("theme-neon");
+ else if(distance>=300)road.classList.add("theme-sunset");
+}
+function gameLoop(time){
+ if(!running)return;
+ const dt=Math.min((time-lastTime)/1000,.05);lastTime=time;
+ difficulty=1+Math.floor(distance/150);
+ let speedMultiplier=cars[saved.car].speed*(1+(difficulty-1)*.08);
+ if(turboTime>0){turboTime-=dt;speedMultiplier*=1.45}
+ if(magnetTime>0)magnetTime-=dt;
+ if(hitCooldown>0)hitCooldown-=dt;
+ distance+=dt*55*speedMultiplier;score=Math.floor(distance*2);
+ saved.missions.distance+=dt*55*speedMultiplier;checkMissionRewards();
+ spawnTimer+=dt;coinTimer+=dt;powerupTimer+=dt;
+ const trafficInterval=Math.max(.65,1.1-(difficulty-1)*.04);
+ if(spawnTimer>trafficInterval){spawnTraffic();spawnTimer=0}
+ if(coinTimer>.8){spawnCoin();coinTimer=0}
+ if(powerupTimer>7){if(Math.random()<.75)spawnPowerup();powerupTimer=0}
+ updateTheme();
+ const fastMode=speedMultiplier>1.22;
+ speedFX.classList.toggle("active",fastMode);speedFX.classList.toggle("fast",speedMultiplier>1.55);
+
+ traffic.forEach(obj=>{
+  obj.y+=obj.speed*speedMultiplier*dt;obj.el.style.top=obj.y+"px";
+  if(obj.lane===playerLane&&hitPlayer(obj.y)&&hitCooldown<=0){
+   createPickupFX(obj.el,shieldActive?"🛡️":"💥");
+   if(shieldActive){shieldActive=false;hitCooldown=1}
+   else{lives--;hitCooldown=1.2;crashEffect()}
+   obj.y=9999;obj.el.remove();updateHUD();updatePowerStatus();
+   if(lives<=0){endRace();return}
+  }
+ });
+ if(!running)return;
+
+ coins.forEach(obj=>{
+  if(magnetTime>0&&obj.lane!==playerLane){obj.el.style.left=lanePercent(playerLane);obj.lane=playerLane}
+  obj.y+=obj.speed*speedMultiplier*dt;obj.el.style.top=obj.y+"px";
+  if(obj.lane===playerLane&&hitPlayer(obj.y)){
+   raceCoins++;saved.missions.coins++;createPickupFX(obj.el,"🪙");vibrate(15);checkMissionRewards();saveGame();
+   obj.y=9999;obj.el.remove();updateHUD();
+  }
+ });
+ powerups.forEach(obj=>{
+  obj.y+=obj.speed*speedMultiplier*dt;obj.el.style.top=obj.y+"px";
+  if(obj.lane===playerLane&&hitPlayer(obj.y)){
+   createPickupFX(obj.el,obj.el.textContent);activatePowerup(obj.type);obj.y=9999;obj.el.remove();
+  }
+ });
+ traffic=traffic.filter(obj=>{if(obj.y>road.clientHeight+100){obj.el.remove();return false}return true});
+ coins=coins.filter(obj=>{if(obj.y>road.clientHeight+100){obj.el.remove();return false}return true});
+ powerups=powerups.filter(obj=>{if(obj.y>road.clientHeight+100){obj.el.remove();return false}return true});
+ updateHUD();updatePowerStatus();
+ if(running)animationFrame=requestAnimationFrame(gameLoop);
+}
+function updateHUD(){
+ scoreText.textContent=Math.floor(score);raceCoinsText.textContent=raceCoins;distanceText.textContent=Math.floor(distance);livesText.textContent=lives;
+}
+function endRace(){
+ if(!running)return;running=false;cancelAnimationFrame(animationFrame);speedFX.classList.remove("active","fast");
+ const finalDistance=Math.floor(distance),wasBest=finalDistance>saved.best;
+ saved.coins+=raceCoins;saved.races++;if(wasBest)saved.best=finalDistance;addLeaderboardScore();saveGame();updateHome();
+ finalText.innerHTML="Score: <b>"+Math.floor(score)+"</b><br>Distance: <b>"+finalDistance+"m</b><br>Coins: <b>+"+raceCoins+" 🪙</b>";
+ bestBadge.classList.toggle("hidden",!wasBest);gameOver.classList.remove("hidden");
+}
+againButton.addEventListener("click",()=>{gameOver.classList.add("hidden");startRace()});
+raceHome.addEventListener("click",()=>{running=false;cancelAnimationFrame(animationFrame);gameOver.classList.add("hidden");speedFX.classList.remove("active","fast");updateHome();showScreen(home);if(window.coinPlayShowPage)window.coinPlayShowPage("games")});
+window.addEventListener("resize",placePlayer);
+updateHome();updateGarage();updateMissions();updateDaily();updateLeaderboard();
+
 </script>
 </body>
 </html>
