@@ -33,6 +33,18 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 .bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(3,1fr);background:#0d111cdd;backdrop-filter:blur(14px);border-top:1px solid #252c3d;padding:9px 10px calc(9px + env(safe-area-inset-bottom));z-index:5}
 .nav{border:0;background:transparent;color:#788299;font-size:11px;font-weight:700;padding:7px;cursor:pointer}.nav.active{color:#ffc83d}.nav div{font-size:19px;margin-bottom:2px}
 .toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#20283a;border:1px solid #39445c;padding:10px 15px;border-radius:12px;font-size:12px;display:none;white-space:nowrap;z-index:10}
+
+.puzzle-shell{padding:18px;background:#121827;border:1px solid #2b3449;border-radius:20px}
+.puzzle-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.puzzle-round{font-size:12px;color:#8f99ae}.puzzle-score{font-size:12px;font-weight:800;color:#ffc83d}
+.puzzle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:330px;margin:0 auto 16px}
+.tile{aspect-ratio:1;border:0;border-radius:12px;background:#273149;color:#fff;font-size:24px;font-weight:900;cursor:pointer}
+.tile:active{transform:scale(.96)}.tile.selected{outline:3px solid #ffc83d;background:#34415d}
+.puzzle-message{text-align:center;min-height:20px;color:#9ba5b9;font-size:12px;margin-bottom:12px}
+.puzzle-actions{display:flex;gap:9px}.puzzle-actions button{flex:1;border:0;border-radius:12px;padding:12px;font-weight:900;cursor:pointer;background:#252e43;color:#fff}
+.puzzle-actions .primary{background:#ffc83d;color:#17120a}
+.result{text-align:center;padding:24px 10px}.result-icon{font-size:48px}.result h2{margin:8px 0}.result p{color:#929caf;font-size:13px;line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -80,6 +92,26 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
   </article>
 </section>
 
+
+<section id="puzzlePage" class="page">
+  <div class="big-title">🧩 Puzzle</div>
+  <div class="sub">Put the numbers in order. Complete 3 rounds to finish.</div>
+  <div class="puzzle-shell">
+    <div class="puzzle-head">
+      <div class="puzzle-round" id="puzzleRound">Round 1 of 3</div>
+      <div class="puzzle-score" id="puzzleScore">0 moves</div>
+    </div>
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <div class="puzzle-message" id="puzzleMessage">Tap two tiles to swap them.</div>
+    <div class="puzzle-actions">
+      <button type="button" id="puzzleShuffle">SHUFFLE</button>
+      <button type="button" class="primary" id="puzzleCheck">CHECK</button>
+    </div>
+  </div>
+  <div id="puzzleResult" style="display:none" class="result"></div>
+  <button type="button" class="start" id="puzzleBack" style="width:100%;margin-top:12px">← BACK TO GAMES</button>
+</section>
+
 <section id="walletPage" class="page">
   <div class="big-title">💰 Wallet</div>
   <div class="sub">Your coins and withdrawal requests.</div>
@@ -103,7 +135,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
 <script>
 (() => {
   let coins = 0;
-  const pages = {home:document.getElementById("homePage"),games:document.getElementById("gamesPage"),wallet:document.getElementById("walletPage")};
+  const pages = {home:document.getElementById("homePage"),games:document.getElementById("gamesPage"),puzzle:document.getElementById("puzzlePage"),wallet:document.getElementById("walletPage")};
   const navs = document.querySelectorAll(".nav");
   const toastEl = document.getElementById("toast");
 
@@ -130,13 +162,94 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Sego
     if(el.classList.contains("nav")) return;
     el.addEventListener("click",()=>showPage(el.dataset.page));
   });
+  let puzzleBoard = [];
+  let puzzleSelected = -1;
+  let puzzleRound = 1;
+  let puzzleMoves = 0;
+  const PUZZLE_ROUNDS = 3;
+
+  function puzzleShuffleBoard(){
+    puzzleBoard = [1,2,3,4,5,6,7,8,9];
+    for(let i=puzzleBoard.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [puzzleBoard[i],puzzleBoard[j]]=[puzzleBoard[j],puzzleBoard[i]];
+    }
+    if(puzzleBoard.every((v,i)=>v===i+1)) [puzzleBoard[0],puzzleBoard[1]]=[puzzleBoard[1],puzzleBoard[0]];
+    puzzleSelected=-1;
+    puzzleMoves=0;
+    renderPuzzle();
+  }
+
+  function renderPuzzle(){
+    document.getElementById("puzzleRound").textContent="Round "+puzzleRound+" of "+PUZZLE_ROUNDS;
+    document.getElementById("puzzleScore").textContent=puzzleMoves+" moves";
+    const grid=document.getElementById("puzzleGrid");
+    grid.innerHTML="";
+    puzzleBoard.forEach((value,index)=>{
+      const b=document.createElement("button");
+      b.type="button"; b.className="tile"+(index===puzzleSelected?" selected":"");
+      b.textContent=value;
+      b.addEventListener("click",()=>selectPuzzleTile(index));
+      grid.appendChild(b);
+    });
+  }
+
+  function selectPuzzleTile(index){
+    if(puzzleSelected===-1){
+      puzzleSelected=index;
+      document.getElementById("puzzleMessage").textContent="Now tap another tile to swap.";
+    }else if(puzzleSelected===index){
+      puzzleSelected=-1;
+      document.getElementById("puzzleMessage").textContent="Tap two tiles to swap them.";
+    }else{
+      [puzzleBoard[puzzleSelected],puzzleBoard[index]]=[puzzleBoard[index],puzzleBoard[puzzleSelected]];
+      puzzleMoves++;
+      puzzleSelected=-1;
+      document.getElementById("puzzleMessage").textContent="Keep going — arrange 1 to 9.";
+    }
+    renderPuzzle();
+  }
+
+  function checkPuzzle(){
+    const solved=puzzleBoard.every((v,i)=>v===i+1);
+    if(!solved){
+      document.getElementById("puzzleMessage").textContent="Not solved yet. Keep arranging the tiles.";
+      return;
+    }
+    if(puzzleRound<PUZZLE_ROUNDS){
+      puzzleRound++;
+      document.getElementById("puzzleMessage").textContent="Great! Next round.";
+      puzzleShuffleBoard();
+      return;
+    }
+    coins += 10;
+    render();
+    document.getElementById("puzzleGrid").style.display="none";
+    document.querySelector(".puzzle-actions").style.display="none";
+    document.getElementById("puzzleResult").style.display="block";
+    document.getElementById("puzzleResult").innerHTML='<div class="result-icon">🎉</div><h2>Puzzle Complete!</h2><p>You completed all 3 rounds in '+puzzleMoves+' moves.</p><p><strong style="color:#ffc83d">+10 🪙 coins added</strong></p>';
+  }
+
+  function openPuzzle(){
+    showPage("puzzle");
+    puzzleRound=1;
+    document.getElementById("puzzleGrid").style.display="grid";
+    document.querySelector(".puzzle-actions").style.display="flex";
+    document.getElementById("puzzleResult").style.display="none";
+    document.getElementById("puzzleMessage").textContent="Tap two tiles to swap them.";
+    puzzleShuffleBoard();
+  }
+
   document.querySelectorAll("[data-game]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const game=btn.dataset.game;
-      showPage("games");
-      toast(game==="puzzle"?"Puzzle is next to build.":game==="racing"?"Racing is next to build.":"Mental Math is next to build.");
+      if(game==="puzzle") openPuzzle();
+      else { showPage("games"); toast(game==="racing"?"Racing is next to build.":"Mental Math is next to build."); }
     });
   });
+  document.getElementById("puzzleShuffle").addEventListener("click",puzzleShuffleBoard);
+  document.getElementById("puzzleCheck").addEventListener("click",checkPuzzle);
+  document.getElementById("puzzleBack").addEventListener("click",()=>showPage("games"));
   document.getElementById("watch").addEventListener("click",()=>toast("AdsGram will be connected after the app is finished."));
   document.getElementById("withdraw").addEventListener("click",()=>toast("Withdrawal form is the next wallet step."));
   render();
