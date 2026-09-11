@@ -249,8 +249,8 @@ body{overflow:auto;touch-action:manipulation}
     <article class="game"><div class="icon">🏎️</div><div><h3>Turbo Racing</h3><p>Dodge traffic and race</p></div><button class="play" data-game="racing">PLAY</button></article>
     <article class="game"><div class="icon">🧠</div><div><h3>Mental Math</h3><p>Solve before the timer</p></div><button class="play" data-game="math">PLAY</button></article>
   </section>
-  <div class="section-title"><h2>💰 Your Wallet</h2><span>100 🪙 = ₹1</span></div>
-  <section class="game"><div class="icon">💳</div><div><h3>Withdraw Earnings</h3><p>Manage your balance & requests</p></div><button class="play" data-page="wallet">OPEN</button></section>
+  <div class="section-title"><h2>🪙 Your Coin Wallet</h2><span>Coins balance</span></div>
+  <section class="game"><div class="icon">🪙</div><div><h3>Coin Balance</h3><p>Keep your earned coins here.</p></div></section>
 </section>
 
 <section id="gamesPage" class="page">
@@ -311,33 +311,32 @@ body{overflow:auto;touch-action:manipulation}
 </section>
 
 <section id="walletPage" class="page">
-  <div class="big-title">💰 Wallet</div>
-  <div class="sub">Your coins and withdrawal requests.</div>
-  <div class="wallet-box">
-    <div class="eyebrow">Available balance</div>
-    <div class="balance"><span id="walletCoins">0</span> 🪙</div>
+  <div class="big-title">🪙 Coin Wallet</div>
+  <div class="sub">Your CoinPlay balance and earning progress.</div>
+
+  <section class="wallet-card">
+    <div class="wallet-label">AVAILABLE COINS</div>
+    <div class="wallet-balance"><span id="walletCoins">0</span> 🪙</div>
     <div class="rupee" id="walletRupee">₹0.00</div>
-    <p class="sub">Conversion: <b>100 coins = ₹1</b></p>
-    <button class="withdraw" id="withdraw">WITHDRAW EARNINGS</button>
+    <p class="sub">100 🪙 = ₹1 value reference</p>
+  </section>
 
-    <div class="withdraw-panel" id="withdrawPanel">
-      <label for="upiId">UPI ID</label>
-      <input id="upiId" type="text" inputmode="email" autocomplete="off" placeholder="example@upi" maxlength="80">
-      <label for="withdrawAmount">AMOUNT (₹)</label>
-      <input id="withdrawAmount" type="number" inputmode="decimal" min="1" step="1" placeholder="Enter amount">
-      <div class="withdraw-hint">Minimum withdrawal: ₹10 (1,000 coins). Your balance will be checked before submitting.</div>
-      <div class="withdraw-error" id="withdrawError"></div>
-      <button class="withdraw-submit" id="withdrawSubmit">SUBMIT WITHDRAWAL REQUEST</button>
-      <button class="withdraw-cancel" id="withdrawCancel">CANCEL</button>
+  <section class="game" style="margin-top:16px">
+    <div class="icon">🎁</div>
+    <div>
+      <h3>Keep Playing & Earning</h3>
+      <p>Watch rewarded ads and complete games to collect coins.</p>
     </div>
+  </section>
 
-    <div class="withdraw-history">
-      <h3>Withdrawal History</h3>
-      <div id="withdrawHistory"></div>
+  <section class="game" style="margin-top:12px">
+    <div class="icon">🔒</div>
+    <div>
+      <h3>Coin balance</h3>
+      <p>Your earned coins are stored here.</p>
     </div>
-  </div>
+  </section>
 </section>
-</main>
 
 <section id="racingPage" class="page racing-page">
 <div id="home" class="screen active">
@@ -433,7 +432,6 @@ body{overflow:auto;touch-action:manipulation}
 <nav class="bottom">
   <button class="nav active" data-page="home"><div>🏠</div>Home</button>
   <button class="nav" data-page="games"><div>🎮</div>Games</button>
-  <button class="nav" data-page="wallet"><div>💰</div>Wallet</button>
 </nav>
 <div class="toast" id="toast"></div>
 
