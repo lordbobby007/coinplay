@@ -451,11 +451,16 @@ body{overflow:auto;touch-action:manipulation}
 
   function render(){
     const n=coins.toLocaleString("en-IN");
-    document.getElementById("coins").textContent=n;
-    document.getElementById("mini").textContent=n+" 🪙";
-    document.getElementById("rupee").textContent="₹"+(coins/100).toFixed(2);
-    document.getElementById("walletCoins").textContent=n;
-    document.getElementById("walletRupee").textContent="₹"+(coins/100).toFixed(2);
+    const coinsEl=document.getElementById("coins");
+    const miniEl=document.getElementById("mini");
+    const rupeeEl=document.getElementById("rupee");
+    const walletCoinsEl=document.getElementById("walletCoins");
+    const walletRupeeEl=document.getElementById("walletRupee");
+    if(coinsEl) coinsEl.textContent=n;
+    if(miniEl) miniEl.textContent=n+" 🪙";
+    if(rupeeEl) rupeeEl.textContent="₹"+(coins/100).toFixed(2);
+    if(walletCoinsEl) walletCoinsEl.textContent=n;
+    if(walletRupeeEl) walletRupeeEl.textContent="₹"+(coins/100).toFixed(2);
   }
   function setCoins(value){
     coins=Math.max(0,Number(value)||0);
@@ -474,7 +479,10 @@ body{overflow:auto;touch-action:manipulation}
     if(name==="racing"){
       Object.keys(pages).forEach(k=>pages[k].classList.toggle("active",k==="racing"));
       navs.forEach(n=>n.classList.remove("active"));
-      if(window.showScreen && window.home) window.showScreen(window.home);
+      if(window.showScreen){
+        const raceHomeScreen=document.getElementById("home");
+        if(raceHomeScreen) window.showScreen(raceHomeScreen);
+      }
       return;
     }
     Object.keys(pages).forEach(k=>pages[k].classList.toggle("active",k===name));
